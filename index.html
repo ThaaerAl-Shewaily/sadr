@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الفقه المعمق - السيد الشهيد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --text-main: #e0e0e0;
+            --accent: #ff9f43; /* برتقالي ذهبي */
+            --correct-col: #00d2d3;
+            --wrong-col: #ff6b6b;
+            --btn-bg: #2e2e42;
+            --btn-hover: #3f3f5a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        /* صورة السيد */
+        .scholar-wrapper {
+            margin-top: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .scholar-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2);
+            object-fit: cover;
+            background-color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* احصائيات وأشرطة */
+        .bars-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .bar-row { display: flex; align-items: center; gap: 12px; }
+        .bar-label { font-size: 0.85rem; width: 50px; font-weight: bold; }
+        
+        .progress-track {
+            flex: 1;
+            height: 8px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .fill-green { background-color: var(--correct-col); box-shadow: 0 0 10px var(--correct-col); }
+        .fill-red { background-color: var(--wrong-col); box-shadow: 0 0 10px var(--wrong-col); }
+
+        /* منطقة السؤال */
+        .question-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            border-right: 6px solid var(--accent);
+            text-align: justify;
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.8;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* الخيارات */
+        .options-grid { display: flex; flex-direction: column; gap: 14px; }
+
+        .option-btn {
+            background: var(--btn-bg);
+            color: var(--text-main);
+            text-align: right;
+            padding: 18px 22px;
+            font-size: 1.05rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            cursor: pointer;
+            line-height: 1.6;
+            transition: transform 0.2s, background 0.2s;
+            font-family: inherit;
+        }
+
+        .option-btn:hover { background: var(--btn-hover); transform: translateX(-4px); }
+        
+        .option-btn.correct { 
+            background: rgba(0, 210, 211, 0.15) !important; 
+            border: 2px solid var(--correct-col); 
+            color: #fff; 
+        }
+        
+        .option-btn.wrong { 
+            background: rgba(255, 107, 107, 0.15) !important; 
+            border: 2px solid var(--wrong-col); 
+            color: #ccc; 
+            opacity: 0.7; 
+        }
+
+        /* شاشات */
+        .screen { display: none; text-align: center; padding: 20px 0; }
+        .screen.active { display: block; animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .loader {
+            border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent);
+            border-radius: 50%; width: 60px; height: 60px;
+            animation: spin 0.8s linear infinite; margin: 30px auto;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* زر إعادة المحاولة */
+        .retry-btn {
+            background: var(--accent); color: #000; font-weight: bold;
+            border: none; padding: 12px 30px; border-radius: 50px;
+            font-size: 1.1rem; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(255, 159, 67, 0.3);
+        }
+
+        .footer-info {
+            margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px; display: flex; justify-content: space-between;
+            color: #666; font-size: 0.9rem;
+        }
+        .quit-link { cursor: pointer; text-decoration: underline; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="scholar-wrapper">
+        <img src="image.jpg" class="scholar-img" 
+             onerror="this.src='https://upload.wikimedia.org/wikipedia/ar/8/88/Mohammad_Sadiq_al-Sadr.jpg'">
+    </div>
+
+    <div class="container">
+        
+        <div id="loading-screen" class="screen active">
+            <div class="loader"></div>
+            <h3>جاري تحليل المسائل وتوليد التمويه...</h3>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="bars-area">
+                <div class="bar-row">
+                    <span class="bar-label" style="color:var(--correct-col)">صح</span>
+                    <div class="progress-track"><div class="progress-fill fill-green" id="bar-correct"></div></div>
+                    <span id="num-correct">0</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label" style="color:var(--wrong-col)">خطأ</span>
+                    <div class="progress-track"><div class="progress-fill fill-red" id="bar-wrong"></div></div>
+                    <span id="num-wrong">0</span>
+                </div>
+            </div>
+
+            <div class="question-box" id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+
+            <div class="footer-info">
+                <span>مسألة <span id="q-idx">0</span> من <span id="q-total">0</span></span>
+                <span class="quit-link" onclick="finishQuiz()">إنهاء</span>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2>النتيجة النهائية</h2>
+            <div style="font-size: 5rem; font-weight: 900; margin: 20px 0; color:var(--accent)" id="final-percent">0%</div>
+            <div id="result-msg" style="margin-bottom: 30px; font-size: 1.2rem; color: #ccc;"></div>
+            <button class="retry-btn" onclick="location.reload()">إعادة التحدي</button>
+        </div>
+    </div>
+
+    <script src="questions_data.js"></script>
+
+    <script>
+        let quizPool = [];
+        let currentIndex = 0;
+        let scoreCorrect = 0;
+        let scoreWrong = 0;
+        let isProcessing = false;
+
+        // مكتبة الاستبدال اللغوي لتوليد إجابات مزيفة مرتبطة بالسياق
+        const replacements = [
+            { orig: "لا يجوز", fake: "يجوز" },
+            { orig: "يجوز", fake: "لا يجوز" },
+            { orig: "حرام", fake: "حلال" },
+            { orig: "حلال", fake: "حرام" },
+            { orig: "واجب", fake: "مستحب" },
+            { orig: "مستحب", fake: "واجب" },
+            { orig: "طاهر", fake: "نجس" },
+            { orig: "نجس", fake: "طاهر" },
+            { orig: "صحيح", fake: "باطل" },
+            { orig: "باطل", fake: "صحيح" },
+            { orig: "يبطل", fake: "يصحح" },
+            { orig: "يصح", fake: "يبطل" },
+            { orig: "نعم", fake: "لا" }, // للحذر مع نعم/لا
+            { orig: "لا", fake: "نعم" },
+            { orig: "يجب", fake: "يستحب" },
+            { orig: "أحوط وجوباً", fake: "أحوط استحباباً" },
+            { orig: "وجوباً", fake: "استحباباً" },
+            { orig: "عمداً", fake: "سهواً" },
+            { orig: "القصر", fake: "التمام" },
+            { orig: "التمام", fake: "القصر" }
+        ];
+
+        window.onload = function() {
+            setTimeout(() => {
+                if (typeof dbQuestions === 'undefined' || !Array.isArray(dbQuestions)) {
+                    alert("خطأ: ملف الأسئلة غير موجود.");
+                } else {
+                    initGame();
+                }
+            }, 800);
+        };
+
+        function initGame() {
+            quizPool = [...dbQuestions].sort(() => Math.random() - 0.5);
+            document.getElementById('loading-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            document.getElementById('q-total').innerText = quizPool.length;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentIndex >= quizPool.length) { finishQuiz(); return; }
+            const qData = quizPool[currentIndex];
+            
+            document.getElementById('question-text').innerText = qData.question;
+            document.getElementById('q-idx').innerText = currentIndex + 1;
+            
+            updateStatsUI();
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            // هنا نستخدم الخوارزمية الجديدة
+            const options = generateContextualOptions(qData);
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleAnswer(opt.isCorrect, btn);
+                optionsContainer.appendChild(btn);
+            });
+            isProcessing = false;
+        }
+
+        // --- الخوارزمية الذكية لتوليد التمويه المرتبط بالسياق ---
+        function generateContextualOptions(currentQ) {
+            const correctText = currentQ.correct_answer;
+            let fakeOptions = new Set(); // نستخدم Set لمنع التكرار
+
+            // 1. المحاولة الأولى: التلاعب اللفظي (قلب الحكم)
+            // نحاول إيجاد كلمات مفتاحية في الجواب الصحيح وعكسها
+            for (let rule of replacements) {
+                if (correctText.includes(rule.orig)) {
+                    // إنشاء جواب مزيف باستبدال الكلمة
+                    let fake = correctText.replace(rule.orig, rule.fake);
+                    // التأكد أننا لم ننشئ الجواب الصحيح بالخطأ (في حال وجود نفي النفي)
+                    if (fake !== correctText && fake.length > 5) {
+                        fakeOptions.add(fake);
+                    }
+                }
+            }
+
+            // 2. المحاولة الثانية: استبدال الأرقام (إذا كان الجواب يحتوي أرقاماً)
+            // مثال: "ثلاثة أيام" -> "أربعة أيام"
+            if (/\d+/.test(correctText)) {
+                let fakeNum = correctText.replace(/(\d+)/, (match) => parseInt(match) + 1);
+                fakeOptions.add(fakeNum);
+                let fakeNum2 = correctText.replace(/(\d+)/, (match) => Math.max(1, parseInt(match) - 1));
+                fakeOptions.add(fakeNum2);
+            }
+
+            // 3. المحاولة الثالثة (الخطة ب): جلب إجابات من نفس القسم وبنفس الطول (التمويه التقليدي)
+            // نستخدم هذا لملء الفراغات إذا لم تنجح الخوارزمية اللغوية في توليد 3 خيارات
+            if (fakeOptions.size < 3) {
+                let pool = dbQuestions.filter(q => q.category === currentQ.category && q.id !== currentQ.id);
+                // خلط المسبح
+                pool.sort(() => Math.random() - 0.5);
+                
+                // البحث عن أقرب طول
+                for (let item of pool) {
+                    if (fakeOptions.size >= 3) break;
+                    // شرط: أن يكون طول الجواب قريباً من الصحيح (لزيادة الصعوبة)
+                    if (Math.abs(item.correct_answer.length - correctText.length) < 20) {
+                         fakeOptions.add(item.correct_answer);
+                    }
+                }
+                
+                // إذا لا زلنا نحتاج خيارات، خذ أي شيء من نفس القسم
+                for (let item of pool) {
+                    if (fakeOptions.size >= 3) break;
+                    fakeOptions.add(item.correct_answer);
+                }
+            }
+
+            // تحويل الـ Set إلى مصفوفة وتجهيز الكائنات
+            let finalFakes = Array.from(fakeOptions).slice(0, 3);
+            
+            // إضافة خيارات احتياطية عامة جداً إذا فشل كل شيء (نادرة الحدوث)
+            while(finalFakes.length < 3) {
+                finalFakes.push("لا يوجد حكم في هذه المسألة");
+            }
+
+            let allOptions = [
+                { text: correctText, isCorrect: true },
+                { text: finalFakes[0], isCorrect: false },
+                { text: finalFakes[1], isCorrect: false },
+                { text: finalFakes[2], isCorrect: false }
+            ];
+
+            return allOptions.sort(() => Math.random() - 0.5);
+        }
+
+        function handleAnswer(isCorrect, btn) {
+            if (isProcessing) return;
+            isProcessing = true;
+            const correctText = quizPool[currentIndex].correct_answer;
+            const allBtns = document.querySelectorAll('.option-btn');
+
+            if (isCorrect) {
+                scoreCorrect++;
+                btn.classList.add('correct');
+                playSound(600, 'sine'); 
+            } else {
+                scoreWrong++;
+                btn.classList.add('wrong');
+                playSound(150, 'sawtooth');
+                allBtns.forEach(b => {
+                    if (b.innerText === correctText) b.classList.add('correct');
+                });
+            }
+
+            updateStatsUI();
+            setTimeout(() => { currentIndex++; renderQuestion(); }, 2000);
+        }
+
+        function updateStatsUI() {
+            document.getElementById('num-correct').innerText = scoreCorrect;
+            document.getElementById('num-wrong').innerText = scoreWrong;
+            let total = scoreCorrect + scoreWrong || 1;
+            document.getElementById('bar-correct').style.width = `${(scoreCorrect/total)*100}%`;
+            document.getElementById('bar-wrong').style.width = `${(scoreWrong/total)*100}%`;
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            let total = scoreCorrect + scoreWrong;
+            let percent = total ? Math.round((scoreCorrect/total)*100) : 0;
+            document.getElementById('final-percent').innerText = `${percent}%`;
+            
+            let msg = "";
+            if(percent === 100) msg = "ما شاء الله! فقيه بامتياز.";
+            else if(percent >= 80) msg = "ممتاز جداً، معلوماتك دقيقة.";
+            else if(percent >= 50) msg = "جيد، لكن تحتاج للمراجعة.";
+            else msg = "حاول مرة أخرى لزيادة التفقه.";
+            document.getElementById('result-msg').innerText = msg;
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        }
+    </script>
+</body>
+</html>

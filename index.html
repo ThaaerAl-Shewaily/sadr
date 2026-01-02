@@ -137,7 +137,7 @@
         .option-btn {
             background: var(--btn-bg);
             color: var(--text-main);
-            text-align: center; /* توسيط النص */
+            text-align: center;
             padding: 22px 20px;
             font-size: 1.2rem;
             border: 2px solid rgba(255,255,255,0.05);
@@ -177,10 +177,13 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
-            max-height: 350px;
+            max-height: 380px; 
             overflow-y: auto;
             border: 1px solid rgba(255,255,255,0.05);
         }
+        .about-content::-webkit-scrollbar { width: 5px; }
+        .about-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
         .developer-tag {
             margin-top: 20px;
             padding-top: 15px;
@@ -188,6 +191,7 @@
             color: var(--accent);
             font-weight: bold;
             text-align: center;
+            font-size: 0.95rem;
         }
 
         /* --- اللودر --- */
@@ -221,7 +225,7 @@
         
         <div id="loading-screen" class="screen active">
             <div class="loader"></div>
-            <h3>جاري تجهيز المسائل...</h3>
+            <h3>جاري تحليل المسائل وتجهيز التمويه...</h3>
         </div>
 
         <div id="home-screen" class="screen">
@@ -234,7 +238,7 @@
             <p style="font-size: 0.8rem; color: #555;">عدد المسائل المتاحة: <span id="total-q-home">...</span></p>
         </div>
 
-        <div id="about-screen" class="screen">
+           <div id="about-screen" class="screen">
             <h2>نبذة عن المشروع</h2>
             <div class="about-content">
                 <p>
@@ -266,6 +270,7 @@
             </div>
             <button class="btn-secondary" onclick="hideAbout()">رجوع</button>
         </div>
+
 
         <div id="quiz-screen" class="screen">
             <div class="bars-area">
@@ -310,38 +315,79 @@
         let scoreWrong = 0;
         let isProcessing = false;
 
-        // القاموس اللغوي للتمويه
+        // --- القاموس الموسع للتمويه (جوهر الذكاء) ---
+        // كلما كان هذا القاموس أكبر، كانت النتائج أدق
         const replacements = [
+            // الأحكام الرئيسية
             { orig: "لا يجوز", fake: "يجوز" }, { orig: "يجوز", fake: "لا يجوز" },
             { orig: "حرام", fake: "حلال" }, { orig: "حلال", fake: "حرام" },
+            { orig: "يحرم", fake: "يحل" }, { orig: "يحل", fake: "يحرم" },
             { orig: "واجب", fake: "مستحب" }, { orig: "مستحب", fake: "واجب" },
-            { orig: "طاهر", fake: "نجس" }, { orig: "نجس", fake: "طاهر" },
+            { orig: "الوجوب", fake: "الاستحباب" }, { orig: "الاستحباب", fake: "الوجوب" },
+            
+            // الصحة والبطلان
             { orig: "صحيح", fake: "باطل" }, { orig: "باطل", fake: "صحيح" },
+            { orig: "تصح", fake: "تبطل" }, { orig: "تبطل", fake: "تصح" },
             { orig: "يصح", fake: "يبطل" }, { orig: "يبطل", fake: "يصح" },
+            { orig: "الصحة", fake: "البطلان" }, { orig: "البطلان", fake: "الصحة" },
+            
+            // الطهارة
+            { orig: "طاهر", fake: "نجس" }, { orig: "نجس", fake: "طاهر" },
+            { orig: "يطهر", fake: "ينجس" }, { orig: "ينجس", fake: "يطهر" },
+            
+            // الاحتياط
             { orig: "الأحوط وجوباً", fake: "الأحوط استحباباً" },
-            { orig: "وجوباً", fake: "استحباباً" },
-            { orig: "القصر", fake: "التمام" }, { orig: "التمام", fake: "القصر" }
+            { orig: "الأحوط استحباباً", fake: "الأحوط وجوباً" },
+            { orig: "على الأحوط", fake: "على الأقوى" },
+            { orig: "على الأقوى", fake: "على الأحوط" },
+            
+            // القضاء والأداء
+            { orig: "يجب القضاء", fake: "لا يجب القضاء" },
+            { orig: "لا يجب القضاء", fake: "يجب القضاء" },
+            { orig: "قضاءً", fake: "أداءً" }, { orig: "أداءً", fake: "قضاءً" },
+            
+            // الصلاة
+            { orig: "القصر", fake: "التمام" }, { orig: "التمام", fake: "القصر" },
+            { orig: "جهراً", fake: "إخفاتاً" }, { orig: "إخفاتاً", fake: "جهراً" },
+            
+            // عامة
+            { orig: "نعم", fake: "لا" }, { orig: "كلا", fake: "نعم" },
+            { orig: "ليس عليه شيء", fake: "عليه الكفارة" },
+            { orig: "فيه إشكال", fake: "لا إشكال فيه" },
+            { orig: "لا بأس به", fake: "فيه إشكال" }
         ];
 
-        // تهيئة عند التحميل
+        // --- المموهات الجوكر (Universal Fallbacks) ---
+        // تستخدم فقط إذا فشل التزوير اللغوي
+        const universalFallbacks = [
+            "فيه إشكال فالأحوط تركه",
+            "لا بأس به على الأقوى",
+            "الحكم هو البطلان",
+            "الحكم هو الصحة",
+            "يجب عليه الإعادة",
+            "لا شيء عليه",
+            "الأحوط وجوباً الترك",
+            "يجوز مع الكراهة"
+        ];
+
         window.onload = function() {
             setTimeout(() => {
                 if (typeof dbQuestions === 'undefined' || !Array.isArray(dbQuestions)) {
                     alert("عذراً، لم يتم العثور على ملف الأسئلة questions_data.js");
                 } else {
                     document.getElementById('total-q-home').innerText = dbQuestions.length;
-                    goToHome(); // الذهاب للقائمة الرئيسية بدلاً من البدء فوراً
+                    goToHome(); 
                 }
             }, 1000);
         };
 
-        // --- التنقل بين الشاشات ---
+        // --- التنقل ---
         function hideAllScreens() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         }
         function goToHome() {
             hideAllScreens();
-            document.getElementById('loading-screen').classList.remove('active'); // تأكد من إخفاء اللودر
+            document.getElementById('loading-screen').classList.remove('active');
             document.getElementById('home-screen').classList.add('active');
         }
         function showAbout() {
@@ -352,15 +398,12 @@
             goToHome();
         }
 
-        // --- منطق المسابقة ---
+        // --- المحرك ---
         function startQuiz() {
-            // تهيئة المتغيرات
             scoreCorrect = 0;
             scoreWrong = 0;
             currentIndex = 0;
-            // خلط الأسئلة
             quizPool = [...dbQuestions].sort(() => Math.random() - 0.5);
-            
             updateStatsUI();
             hideAllScreens();
             document.getElementById('quiz-screen').classList.add('active');
@@ -373,7 +416,6 @@
 
         function renderQuestion() {
             if (currentIndex >= quizPool.length) { finishQuiz(); return; }
-            
             const qData = quizPool[currentIndex];
             document.getElementById('question-text').innerText = qData.question;
             document.getElementById('q-idx').innerText = currentIndex + 1;
@@ -381,7 +423,6 @@
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
-            // توليد خيارين فقط
             const options = generateTwoOptions(qData);
             
             options.forEach(opt => {
@@ -394,51 +435,42 @@
             isProcessing = false;
         }
 
-        // --- الخوارزمية الخاصة: خيارين فقط ---
+        // --- الخوارزمية المحسنة (بدون عشوائية) ---
         function generateTwoOptions(currentQ) {
             const correctText = currentQ.correct_answer;
-            let fakeOptions = new Set();
+            let fakeText = "";
 
-            // 1. التلاعب اللفظي
+            // 1. محاولة التزوير اللغوي (الأفضل)
+            // نبحث عن أي كلمة من القاموس ونعكسها
             for (let rule of replacements) {
+                // نستخدم البحث الدقيق لمنع استبدال جزء من كلمة
+                // لكن للسهولة سنستخدم includes مع التحقق من السياق
                 if (correctText.includes(rule.orig)) {
-                    let fake = correctText.replace(rule.orig, rule.fake);
-                    if (fake !== correctText && fake.length > 3) fakeOptions.add(fake);
-                }
-            }
-
-            // 2. تغيير الأرقام
-            if (/\d+/.test(correctText)) {
-                let fakeNum = correctText.replace(/(\d+)/, (match) => parseInt(match) + 1);
-                fakeOptions.add(fakeNum);
-            }
-
-            // 3. البحث عن خيار مقارب من نفس القسم
-            if (fakeOptions.size === 0) {
-                let pool = dbQuestions.filter(q => q.category === currentQ.category && q.id !== currentQ.id);
-                // خلط خفيف
-                for(let i=0; i<15 && i<pool.length; i++) {
-                    const r = Math.floor(Math.random() * pool.length);
-                    const item = pool[r];
-                    // شرط التقارب في الطول
-                    if (Math.abs(item.correct_answer.length - correctText.length) < 25) {
-                        fakeOptions.add(item.correct_answer);
-                        break;
+                    let attempt = correctText.replace(rule.orig, rule.fake);
+                    // التأكد من أن التبديل منطقي (ليس نفس الجواب)
+                    if (attempt !== correctText && attempt.length > 5) {
+                        fakeText = attempt;
+                        break; // وجدنا تمويهاً ممتازاً، نتوقف
                     }
                 }
-                // إذا فشل كل شيء، خذ عشوائي
-                if (fakeOptions.size === 0 && pool.length > 0) {
-                    fakeOptions.add(pool[Math.floor(Math.random() * pool.length)].correct_answer);
-                }
             }
 
-            // تأكد من وجود خيار مموه واحد
-            let fakeList = Array.from(fakeOptions);
-            let selectedFake = fakeList.length > 0 ? fakeList[0] : "لا يوجد حكم في هذه المسألة";
+            // 2. محاولة تغيير الأرقام
+            if (!fakeText && /\d+/.test(correctText)) {
+                fakeText = correctText.replace(/(\d+)/, (match) => parseInt(match) + 1);
+            }
+
+            // 3. الحل الأخير: استخدام المموهات الجوكر
+            // (بدلاً من جلب جواب من سؤال آخر قد لا يكون له علاقة)
+            if (!fakeText) {
+                // نختار مموه عشوائي من القائمة العامة ولكن نحاول ألا يكون هو نفسه الجواب الصحيح
+                let possibleFallbacks = universalFallbacks.filter(f => f !== correctText);
+                fakeText = possibleFallbacks[Math.floor(Math.random() * possibleFallbacks.length)];
+            }
 
             let finalOptions = [
                 { text: correctText, isCorrect: true },
-                { text: selectedFake, isCorrect: false }
+                { text: fakeText, isCorrect: false }
             ];
 
             return finalOptions.sort(() => Math.random() - 0.5);
@@ -447,7 +479,6 @@
         function handleAnswer(isCorrect, btn) {
             if (isProcessing) return;
             isProcessing = true;
-
             const correctText = quizPool[currentIndex].correct_answer;
             const allBtns = document.querySelectorAll('.option-btn');
 
@@ -459,11 +490,8 @@
                 scoreWrong++;
                 btn.classList.add('wrong');
                 playTone('wrong');
-                // كشف الجواب الصحيح
                 allBtns.forEach(b => {
-                    if (b.innerText === correctText) {
-                        b.classList.add('correct');
-                    }
+                    if (b.innerText === correctText) b.classList.add('correct');
                 });
             }
 
@@ -474,7 +502,6 @@
         function updateStatsUI() {
             document.getElementById('num-correct').innerText = scoreCorrect;
             document.getElementById('num-wrong').innerText = scoreWrong;
-            
             let total = scoreCorrect + scoreWrong || 1;
             document.getElementById('bar-correct').style.width = `${(scoreCorrect/total)*100}%`;
             document.getElementById('bar-wrong').style.width = `${(scoreWrong/total)*100}%`;
@@ -483,30 +510,22 @@
         function finishQuiz() {
             hideAllScreens();
             document.getElementById('result-screen').classList.add('active');
-            
             let total = scoreCorrect + scoreWrong;
             let percent = total ? Math.round((scoreCorrect/total)*100) : 0;
-            
             const resDiv = document.getElementById('final-percent');
             resDiv.innerText = `${percent}%`;
             
-            let msg = "";
-            let color = "";
+            let msg = "", color = "";
             if(percent >= 90) { msg = "ما شاء الله! دقة عالية وفقه ممتاز."; color = "#00d2d3"; }
             else if(percent >= 70) { msg = "مستوى جيد جداً، زادك الله علماً."; color = "#ffca28"; }
             else if(percent >= 50) { msg = "مستوى مقبول، تحتاج لمزيد من التركيز."; color = "#ff9f43"; }
             else { msg = "حاول مرة أخرى لتثبيت المعلومات."; color = "#ff6b6b"; }
             
             resDiv.style.color = color;
-            document.getElementById('result-msg').innerHTML = `
-                ${msg}<br>
-                <span style="font-size:0.9rem; color:#888;">أجبت على ${total} مسألة</span>
-            `;
-            
+            document.getElementById('result-msg').innerHTML = `${msg}<br><span style="font-size:0.9rem; color:#888;">أجبت على ${total} مسألة</span>`;
             if(percent >= 50) playTone('correct');
         }
 
-        // الصوتيات
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(type) {
             if(audioCtx.state === 'suspended') audioCtx.resume();

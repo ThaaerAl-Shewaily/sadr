@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحدي الفقه المعمق - السيد الشهيد</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>فقه الصدرين - التحدي الفقهي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f0f1a;
             --card-bg: #1a1a2e;
             --text-main: #e0e0e0;
-            --accent: #ff9f43; /* برتقالي ذهبي */
-            --correct-col: #00d2d3;
-            --wrong-col: #ff6b6b;
+            --accent: #ff9f43;    /* لون ذهبي */
+            --correct-col: #00d2d3; /* تركواز */
+            --wrong-col: #ff6b6b;   /* أحمر */
             --btn-bg: #2e2e42;
             --btn-hover: #3f3f5a;
         }
@@ -28,14 +28,16 @@
             flex-direction: column;
             align-items: center;
             padding: 15px;
+            overflow-x: hidden;
         }
 
-        /* صورة السيد */
+        /* --- صورة السيد --- */
         .scholar-wrapper {
-            margin-top: 15px;
+            margin-top: 20px;
             margin-bottom: 25px;
             position: relative;
             z-index: 10;
+            transition: transform 0.3s;
         }
         
         .scholar-img {
@@ -43,11 +45,12 @@
             height: 140px;
             border-radius: 50%;
             border: 4px solid var(--accent);
-            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2);
+            box-shadow: 0 0 35px rgba(255, 159, 67, 0.3);
             object-fit: cover;
-            background-color: #333;
+            background-color: #222;
         }
 
+        /* --- الحاوية الرئيسية --- */
         .container {
             width: 100%;
             max-width: 700px;
@@ -58,109 +61,153 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            min-height: 500px;
         }
 
-        /* احصائيات وأشرطة */
+        /* --- العناوين والنصوص --- */
+        h1, h2, h3 { color: var(--accent); margin-bottom: 15px; }
+        p { line-height: 1.8; color: #ccc; margin-bottom: 15px; }
+
+        /* --- الأزرار العامة --- */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent), #ffca28);
+            color: #000;
+            font-weight: 900;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 159, 67, 0.4);
+            transition: transform 0.2s;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .btn-primary:active { transform: scale(0.95); }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-weight: 700;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-secondary:hover { background: rgba(255, 159, 67, 0.1); }
+
+        /* --- أشرطة التقدم --- */
         .bars-area {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 30px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.3);
             padding: 15px;
             border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
         }
-
         .bar-row { display: flex; align-items: center; gap: 12px; }
-        .bar-label { font-size: 0.85rem; width: 50px; font-weight: bold; }
-        
-        .progress-track {
-            flex: 1;
-            height: 8px;
-            background: #222;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        .progress-track { flex: 1; height: 8px; background: #222; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; transition: width 0.5s ease; }
+        .fill-green { background-color: var(--correct-col); }
+        .fill-red { background-color: var(--wrong-col); }
 
-        .progress-fill { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .fill-green { background-color: var(--correct-col); box-shadow: 0 0 10px var(--correct-col); }
-        .fill-red { background-color: var(--wrong-col); box-shadow: 0 0 10px var(--wrong-col); }
-
-        /* منطقة السؤال */
+        /* --- منطقة السؤال --- */
         .question-box {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             padding: 25px;
             border-radius: 18px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             border-right: 6px solid var(--accent);
             text-align: justify;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 600;
             line-height: 1.8;
             min-height: 120px;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
-        /* الخيارات */
-        .options-grid { display: flex; flex-direction: column; gap: 14px; }
+        /* --- خيارات الإجابة (زرين فقط) --- */
+        .options-grid { display: flex; flex-direction: column; gap: 20px; }
 
         .option-btn {
             background: var(--btn-bg);
             color: var(--text-main);
-            text-align: right;
-            padding: 18px 22px;
-            font-size: 1.05rem;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 14px;
+            text-align: center; /* توسيط النص */
+            padding: 22px 20px;
+            font-size: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
             cursor: pointer;
-            line-height: 1.6;
-            transition: transform 0.2s, background 0.2s;
+            line-height: 1.5;
+            transition: all 0.2s;
             font-family: inherit;
+            font-weight: bold;
         }
 
-        .option-btn:hover { background: var(--btn-hover); transform: translateX(-4px); }
+        .option-btn:hover { background: var(--btn-hover); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
         
         .option-btn.correct { 
-            background: rgba(0, 210, 211, 0.15) !important; 
-            border: 2px solid var(--correct-col); 
+            background: rgba(0, 210, 211, 0.2) !important; 
+            border-color: var(--correct-col); 
             color: #fff; 
+            box-shadow: 0 0 15px rgba(0, 210, 211, 0.3);
         }
         
         .option-btn.wrong { 
-            background: rgba(255, 107, 107, 0.15) !important; 
-            border: 2px solid var(--wrong-col); 
-            color: #ccc; 
-            opacity: 0.7; 
+            background: rgba(255, 107, 107, 0.2) !important; 
+            border-color: var(--wrong-col); 
+            color: #ddd; 
+            opacity: 0.6; 
         }
 
-        /* شاشات */
-        .screen { display: none; text-align: center; padding: 20px 0; }
-        .screen.active { display: block; animation: fadeIn 0.6s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- الشاشات --- */
+        .screen { display: none; text-align: center; padding: 10px 0; height: 100%; }
+        .screen.active { display: flex; flex-direction: column; justify-content: center; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* --- شاشة حول البرنامج --- */
+        .about-content {
+            text-align: justify;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .developer-tag {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #444;
+            color: var(--accent);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* --- اللودر --- */
         .loader {
             border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent);
-            border-radius: 50%; width: 60px; height: 60px;
-            animation: spin 0.8s linear infinite; margin: 30px auto;
+            border-radius: 50%; width: 50px; height: 50px;
+            animation: spin 0.8s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* زر إعادة المحاولة */
-        .retry-btn {
-            background: var(--accent); color: #000; font-weight: bold;
-            border: none; padding: 12px 30px; border-radius: 50px;
-            font-size: 1.1rem; cursor: pointer; margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(255, 159, 67, 0.3);
+        /* فوتر المسابقة */
+        .quiz-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
-
-        .footer-info {
-            margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px; display: flex; justify-content: space-between;
-            color: #666; font-size: 0.9rem;
-        }
-        .quit-link { cursor: pointer; text-decoration: underline; color: #888; }
     </style>
 </head>
 <body>
@@ -174,18 +221,61 @@
         
         <div id="loading-screen" class="screen active">
             <div class="loader"></div>
-            <h3>جاري تحليل المسائل وتوليد التمويه...</h3>
+            <h3>جاري تجهيز المسائل...</h3>
+        </div>
+
+        <div id="home-screen" class="screen">
+            <h1 style="font-size: 2rem;">المسابقة الفقهية</h1>
+            <p>اختبر معلوماتك في فتاوى السيد الشهيد محمد الصدر (قدس)</p>
+            <div style="margin: 30px 0; width: 100%;">
+                <button class="btn-primary" onclick="startQuiz()">ابدأ التحدي</button>
+                <button class="btn-secondary" onclick="showAbout()">حول البرنامج</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #555;">عدد المسائل المتاحة: <span id="total-q-home">...</span></p>
+        </div>
+
+        <div id="about-screen" class="screen">
+            <h2>نبذة عن المشروع</h2>
+            <div class="about-content">
+                <p>
+              <center>  <strong>بسم الله الرحمن الرحيم</strong> </center> <br>
+                    انطلاقاً من المسؤولية الشرعية في نشر علوم آل محمد (عليهم السلام)، و تراث السيد الشهيد محمد محمد صادق الصدر (قدس سره) وتسهيلاً لوصول الأحكام الشرعية إلى طبقة الشباب المثقف بأسلوب عصري وشيق، تم تطوير هذا البرنامج التفاعلي و بأستخدام تقنيات الذكاء الاصطناعي.
+                </p>
+                <p>
+                    يعتمد البرنامج على تحويل النصوص الفقهية المطبوعة و المأخوذه من كتاب (مسائل و ردود) بأجزاءه الخمسة من فتاوى <strong>آية الله العظمى السيد الشهيد محمد محمد صادق الصدر (قدس سره)</strong> إلى تحدٍ ذكي يختبر دقة الفهم لا مجرد الحفظ.
+                </p>
+ <strong>كيف يعمل الذكاء الاصطناعي في البرنامج؟</strong><br>
+                    لضمان أعلى درجات التحدي، لا يعتمد البرنامج على أجوبة خاطئة عشوائية. بل يستخدم <strong>خوارزمية معالجة لغوية ذكية</strong> تقوم بتحليل الجواب الصحيح واستبدال الحكم الشرعي بنقيضه (مثلاً: قلب "واجب" إلى "مستحب" أو "يجوز" إلى "لا يجوز").<br>
+                    هذه التقنية تولد جواباً "مموهًا" مطابقاً تماماً لنص السؤال وسياقه اللغوي، مما يجبر المتسابق على استحضار الحكم الدقيق بدلاً من الاعتماد على شكل الجواب.
+                </p>
+
+                <p>
+                    <strong>أهداف البرنامج:</strong>
+                    <br>• ترسيخ المعلومة الفقهية عبر التكرار والتصحيح المباشر.
+                    <br>• التدريب على التمييز الدقيق بين الأحكام المتشابهة.
+                    <br>• إحياء التراث العلمي وجعله في متناول اليد.
+                <center>      <br> و نسأل الله الرضا و القبول
+                    <br>و صلى الله على محمد وآل بيته الطيبين الطاهرين
+         </center>
+                </p>
+                <div class="developer-tag">
+                    فكرة وتطوير: ثائر الشويلي
+                <br>    1447 هـ
+                
+            </div>
+            </div>
+            <button class="btn-secondary" onclick="hideAbout()">رجوع</button>
         </div>
 
         <div id="quiz-screen" class="screen">
             <div class="bars-area">
                 <div class="bar-row">
-                    <span class="bar-label" style="color:var(--correct-col)">صح</span>
+                    <span style="color:var(--correct-col); font-weight:bold;">صح</span>
                     <div class="progress-track"><div class="progress-fill fill-green" id="bar-correct"></div></div>
                     <span id="num-correct">0</span>
                 </div>
                 <div class="bar-row">
-                    <span class="bar-label" style="color:var(--wrong-col)">خطأ</span>
+                    <span style="color:var(--wrong-col); font-weight:bold;">خطأ</span>
                     <div class="progress-track"><div class="progress-fill fill-red" id="bar-wrong"></div></div>
                     <span id="num-wrong">0</span>
                 </div>
@@ -194,85 +284,105 @@
             <div class="question-box" id="question-text"></div>
             <div class="options-grid" id="options-container"></div>
 
-            <div class="footer-info">
-                <span>مسألة <span id="q-idx">0</span> من <span id="q-total">0</span></span>
-                <span class="quit-link" onclick="finishQuiz()">إنهاء</span>
+            <div class="quiz-footer">
+                <span>مسألة <b id="q-idx">0</b></span>
+                <span style="cursor:pointer; text-decoration:underline;" onclick="finishQuiz()">إنهاء</span>
             </div>
         </div>
 
         <div id="result-screen" class="screen">
             <h2>النتيجة النهائية</h2>
             <div style="font-size: 5rem; font-weight: 900; margin: 20px 0; color:var(--accent)" id="final-percent">0%</div>
-            <div id="result-msg" style="margin-bottom: 30px; font-size: 1.2rem; color: #ccc;"></div>
-            <button class="retry-btn" onclick="location.reload()">إعادة التحدي</button>
+            <div id="result-msg" style="margin-bottom: 30px; font-size: 1.1rem; line-height:1.8;"></div>
+            <button class="btn-primary" onclick="resetQuiz()">إعادة التحدي</button>
+            <button class="btn-secondary" onclick="goToHome()">القائمة الرئيسية</button>
         </div>
+
     </div>
 
     <script src="questions_data.js"></script>
 
     <script>
+        // المتغيرات
         let quizPool = [];
         let currentIndex = 0;
         let scoreCorrect = 0;
         let scoreWrong = 0;
         let isProcessing = false;
 
-        // مكتبة الاستبدال اللغوي لتوليد إجابات مزيفة مرتبطة بالسياق
+        // القاموس اللغوي للتمويه
         const replacements = [
-            { orig: "لا يجوز", fake: "يجوز" },
-            { orig: "يجوز", fake: "لا يجوز" },
-            { orig: "حرام", fake: "حلال" },
-            { orig: "حلال", fake: "حرام" },
-            { orig: "واجب", fake: "مستحب" },
-            { orig: "مستحب", fake: "واجب" },
-            { orig: "طاهر", fake: "نجس" },
-            { orig: "نجس", fake: "طاهر" },
-            { orig: "صحيح", fake: "باطل" },
-            { orig: "باطل", fake: "صحيح" },
-            { orig: "يبطل", fake: "يصحح" },
-            { orig: "يصح", fake: "يبطل" },
-            { orig: "نعم", fake: "لا" }, // للحذر مع نعم/لا
-            { orig: "لا", fake: "نعم" },
-            { orig: "يجب", fake: "يستحب" },
-            { orig: "أحوط وجوباً", fake: "أحوط استحباباً" },
+            { orig: "لا يجوز", fake: "يجوز" }, { orig: "يجوز", fake: "لا يجوز" },
+            { orig: "حرام", fake: "حلال" }, { orig: "حلال", fake: "حرام" },
+            { orig: "واجب", fake: "مستحب" }, { orig: "مستحب", fake: "واجب" },
+            { orig: "طاهر", fake: "نجس" }, { orig: "نجس", fake: "طاهر" },
+            { orig: "صحيح", fake: "باطل" }, { orig: "باطل", fake: "صحيح" },
+            { orig: "يصح", fake: "يبطل" }, { orig: "يبطل", fake: "يصح" },
+            { orig: "الأحوط وجوباً", fake: "الأحوط استحباباً" },
             { orig: "وجوباً", fake: "استحباباً" },
-            { orig: "عمداً", fake: "سهواً" },
-            { orig: "القصر", fake: "التمام" },
-            { orig: "التمام", fake: "القصر" }
+            { orig: "القصر", fake: "التمام" }, { orig: "التمام", fake: "القصر" }
         ];
 
+        // تهيئة عند التحميل
         window.onload = function() {
             setTimeout(() => {
                 if (typeof dbQuestions === 'undefined' || !Array.isArray(dbQuestions)) {
-                    alert("خطأ: ملف الأسئلة غير موجود.");
+                    alert("عذراً، لم يتم العثور على ملف الأسئلة questions_data.js");
                 } else {
-                    initGame();
+                    document.getElementById('total-q-home').innerText = dbQuestions.length;
+                    goToHome(); // الذهاب للقائمة الرئيسية بدلاً من البدء فوراً
                 }
-            }, 800);
+            }, 1000);
         };
 
-        function initGame() {
+        // --- التنقل بين الشاشات ---
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        }
+        function goToHome() {
+            hideAllScreens();
+            document.getElementById('loading-screen').classList.remove('active'); // تأكد من إخفاء اللودر
+            document.getElementById('home-screen').classList.add('active');
+        }
+        function showAbout() {
+            hideAllScreens();
+            document.getElementById('about-screen').classList.add('active');
+        }
+        function hideAbout() {
+            goToHome();
+        }
+
+        // --- منطق المسابقة ---
+        function startQuiz() {
+            // تهيئة المتغيرات
+            scoreCorrect = 0;
+            scoreWrong = 0;
+            currentIndex = 0;
+            // خلط الأسئلة
             quizPool = [...dbQuestions].sort(() => Math.random() - 0.5);
-            document.getElementById('loading-screen').classList.remove('active');
+            
+            updateStatsUI();
+            hideAllScreens();
             document.getElementById('quiz-screen').classList.add('active');
-            document.getElementById('q-total').innerText = quizPool.length;
             renderQuestion();
+        }
+
+        function resetQuiz() {
+            startQuiz();
         }
 
         function renderQuestion() {
             if (currentIndex >= quizPool.length) { finishQuiz(); return; }
-            const qData = quizPool[currentIndex];
             
+            const qData = quizPool[currentIndex];
             document.getElementById('question-text').innerText = qData.question;
             document.getElementById('q-idx').innerText = currentIndex + 1;
             
-            updateStatsUI();
-
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
-            // هنا نستخدم الخوارزمية الجديدة
-            const options = generateContextualOptions(qData);
+            // توليد خيارين فقط
+            const options = generateTwoOptions(qData);
             
             options.forEach(opt => {
                 const btn = document.createElement('button');
@@ -284,132 +394,142 @@
             isProcessing = false;
         }
 
-        // --- الخوارزمية الذكية لتوليد التمويه المرتبط بالسياق ---
-        function generateContextualOptions(currentQ) {
+        // --- الخوارزمية الخاصة: خيارين فقط ---
+        function generateTwoOptions(currentQ) {
             const correctText = currentQ.correct_answer;
-            let fakeOptions = new Set(); // نستخدم Set لمنع التكرار
+            let fakeOptions = new Set();
 
-            // 1. المحاولة الأولى: التلاعب اللفظي (قلب الحكم)
-            // نحاول إيجاد كلمات مفتاحية في الجواب الصحيح وعكسها
+            // 1. التلاعب اللفظي
             for (let rule of replacements) {
                 if (correctText.includes(rule.orig)) {
-                    // إنشاء جواب مزيف باستبدال الكلمة
                     let fake = correctText.replace(rule.orig, rule.fake);
-                    // التأكد أننا لم ننشئ الجواب الصحيح بالخطأ (في حال وجود نفي النفي)
-                    if (fake !== correctText && fake.length > 5) {
-                        fakeOptions.add(fake);
-                    }
+                    if (fake !== correctText && fake.length > 3) fakeOptions.add(fake);
                 }
             }
 
-            // 2. المحاولة الثانية: استبدال الأرقام (إذا كان الجواب يحتوي أرقاماً)
-            // مثال: "ثلاثة أيام" -> "أربعة أيام"
+            // 2. تغيير الأرقام
             if (/\d+/.test(correctText)) {
                 let fakeNum = correctText.replace(/(\d+)/, (match) => parseInt(match) + 1);
                 fakeOptions.add(fakeNum);
-                let fakeNum2 = correctText.replace(/(\d+)/, (match) => Math.max(1, parseInt(match) - 1));
-                fakeOptions.add(fakeNum2);
             }
 
-            // 3. المحاولة الثالثة (الخطة ب): جلب إجابات من نفس القسم وبنفس الطول (التمويه التقليدي)
-            // نستخدم هذا لملء الفراغات إذا لم تنجح الخوارزمية اللغوية في توليد 3 خيارات
-            if (fakeOptions.size < 3) {
+            // 3. البحث عن خيار مقارب من نفس القسم
+            if (fakeOptions.size === 0) {
                 let pool = dbQuestions.filter(q => q.category === currentQ.category && q.id !== currentQ.id);
-                // خلط المسبح
-                pool.sort(() => Math.random() - 0.5);
-                
-                // البحث عن أقرب طول
-                for (let item of pool) {
-                    if (fakeOptions.size >= 3) break;
-                    // شرط: أن يكون طول الجواب قريباً من الصحيح (لزيادة الصعوبة)
-                    if (Math.abs(item.correct_answer.length - correctText.length) < 20) {
-                         fakeOptions.add(item.correct_answer);
+                // خلط خفيف
+                for(let i=0; i<15 && i<pool.length; i++) {
+                    const r = Math.floor(Math.random() * pool.length);
+                    const item = pool[r];
+                    // شرط التقارب في الطول
+                    if (Math.abs(item.correct_answer.length - correctText.length) < 25) {
+                        fakeOptions.add(item.correct_answer);
+                        break;
                     }
                 }
-                
-                // إذا لا زلنا نحتاج خيارات، خذ أي شيء من نفس القسم
-                for (let item of pool) {
-                    if (fakeOptions.size >= 3) break;
-                    fakeOptions.add(item.correct_answer);
+                // إذا فشل كل شيء، خذ عشوائي
+                if (fakeOptions.size === 0 && pool.length > 0) {
+                    fakeOptions.add(pool[Math.floor(Math.random() * pool.length)].correct_answer);
                 }
             }
 
-            // تحويل الـ Set إلى مصفوفة وتجهيز الكائنات
-            let finalFakes = Array.from(fakeOptions).slice(0, 3);
-            
-            // إضافة خيارات احتياطية عامة جداً إذا فشل كل شيء (نادرة الحدوث)
-            while(finalFakes.length < 3) {
-                finalFakes.push("لا يوجد حكم في هذه المسألة");
-            }
+            // تأكد من وجود خيار مموه واحد
+            let fakeList = Array.from(fakeOptions);
+            let selectedFake = fakeList.length > 0 ? fakeList[0] : "لا يوجد حكم في هذه المسألة";
 
-            let allOptions = [
+            let finalOptions = [
                 { text: correctText, isCorrect: true },
-                { text: finalFakes[0], isCorrect: false },
-                { text: finalFakes[1], isCorrect: false },
-                { text: finalFakes[2], isCorrect: false }
+                { text: selectedFake, isCorrect: false }
             ];
 
-            return allOptions.sort(() => Math.random() - 0.5);
+            return finalOptions.sort(() => Math.random() - 0.5);
         }
 
         function handleAnswer(isCorrect, btn) {
             if (isProcessing) return;
             isProcessing = true;
+
             const correctText = quizPool[currentIndex].correct_answer;
             const allBtns = document.querySelectorAll('.option-btn');
 
             if (isCorrect) {
                 scoreCorrect++;
                 btn.classList.add('correct');
-                playSound(600, 'sine'); 
+                playTone('correct');
             } else {
                 scoreWrong++;
                 btn.classList.add('wrong');
-                playSound(150, 'sawtooth');
+                playTone('wrong');
+                // كشف الجواب الصحيح
                 allBtns.forEach(b => {
-                    if (b.innerText === correctText) b.classList.add('correct');
+                    if (b.innerText === correctText) {
+                        b.classList.add('correct');
+                    }
                 });
             }
 
             updateStatsUI();
-            setTimeout(() => { currentIndex++; renderQuestion(); }, 2000);
+            setTimeout(() => { currentIndex++; renderQuestion(); }, 1800);
         }
 
         function updateStatsUI() {
             document.getElementById('num-correct').innerText = scoreCorrect;
             document.getElementById('num-wrong').innerText = scoreWrong;
+            
             let total = scoreCorrect + scoreWrong || 1;
             document.getElementById('bar-correct').style.width = `${(scoreCorrect/total)*100}%`;
             document.getElementById('bar-wrong').style.width = `${(scoreWrong/total)*100}%`;
         }
 
         function finishQuiz() {
-            document.getElementById('quiz-screen').classList.remove('active');
+            hideAllScreens();
             document.getElementById('result-screen').classList.add('active');
+            
             let total = scoreCorrect + scoreWrong;
             let percent = total ? Math.round((scoreCorrect/total)*100) : 0;
-            document.getElementById('final-percent').innerText = `${percent}%`;
+            
+            const resDiv = document.getElementById('final-percent');
+            resDiv.innerText = `${percent}%`;
             
             let msg = "";
-            if(percent === 100) msg = "ما شاء الله! فقيه بامتياز.";
-            else if(percent >= 80) msg = "ممتاز جداً، معلوماتك دقيقة.";
-            else if(percent >= 50) msg = "جيد، لكن تحتاج للمراجعة.";
-            else msg = "حاول مرة أخرى لزيادة التفقه.";
-            document.getElementById('result-msg').innerText = msg;
+            let color = "";
+            if(percent >= 90) { msg = "ما شاء الله! دقة عالية وفقه ممتاز."; color = "#00d2d3"; }
+            else if(percent >= 70) { msg = "مستوى جيد جداً، زادك الله علماً."; color = "#ffca28"; }
+            else if(percent >= 50) { msg = "مستوى مقبول، تحتاج لمزيد من التركيز."; color = "#ff9f43"; }
+            else { msg = "حاول مرة أخرى لتثبيت المعلومات."; color = "#ff6b6b"; }
+            
+            resDiv.style.color = color;
+            document.getElementById('result-msg').innerHTML = `
+                ${msg}<br>
+                <span style="font-size:0.9rem; color:#888;">أجبت على ${total} مسألة</span>
+            `;
+            
+            if(percent >= 50) playTone('correct');
         }
 
+        // الصوتيات
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(freq, type) {
+        function playTone(type) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            const now = audioCtx.currentTime;
+            
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            }
+            osc.start(now); osc.stop(now + 0.3);
         }
     </script>
 </body>
